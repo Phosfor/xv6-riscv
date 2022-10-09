@@ -10,12 +10,15 @@ _entry:
         # with a 4096-byte stack per CPU.
         # sp = stack0 + (hartid * 4096)
         la sp, stack0
-        li a0, 1024*4
-        csrr a1, mhartid
-        addi a1, a1, 1
-        mul a0, a0, a1
-        add sp, sp, a0
+        # li a0, 1024*4
+        # csrr a1, mhartid
+        # addi a1, a1, 1
+        # mul a0, a0, a1
+        # add sp, sp, a0
+
+        # tp contains the hartid. We only upport a single hart for now.
+        li tp, 0
         # jump to start() in start.c
-        call start
+        call main
 spin:
         j spin
