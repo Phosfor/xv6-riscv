@@ -263,6 +263,7 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
 void sbi_console_putchar(int ch);
 int sbi_console_getchar(void);
 int sbi_probe_extension(int ext);
+void sbi_set_timer(uint64_t stime_value);
 
 /* Check if current SBI specification version is 0.1 or not */
 static inline int sbi_spec_is_0_1(void)

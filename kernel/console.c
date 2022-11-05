@@ -74,6 +74,25 @@ consolewrite(int user_src, uint64 src, int n)
   return i;
 }
 
+void
+consolepoll()
+{
+  int c;
+
+  //acquire(&cons.lock);
+  
+  c = sbi_console_getchar();
+
+  if (c != -1)
+  {
+    consoleintr(c);
+  }
+
+  //release(&cons.lock);
+
+}
+
+
 //
 // user read()s from the console go here.
 // copy (up to) a whole input line to dst.

@@ -5,8 +5,8 @@
  * Copyright (c) 2020 Western Digital Corporation or its affiliates.
  */
 
-#include "sbi.h"
 #include "types.h"
+#include "sbi.h"
 
 struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
 			unsigned long arg1, unsigned long arg2,
@@ -42,4 +42,25 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
 void sbi_console_putchar(int ch)
 {
 	sbi_ecall(SBI_EXT_0_1_CONSOLE_PUTCHAR, 0, ch, 0, 0, 0, 0, 0);
+}
+
+/**
+ * sbi_console_getchar() - Reads a byte from console device.
+ *
+ * Returns the value read from console.
+ */
+int sbi_console_getchar(void)
+{
+	struct sbiret ret;
+
+	ret = sbi_ecall(SBI_EXT_0_1_CONSOLE_GETCHAR, 0, 0, 0, 0, 0, 0, 0);
+
+	return ret.error;
+}
+
+//v0.2 version
+void sbi_set_timer(uint64_t stime_value)
+{
+	sbi_ecall(SBI_EXT_TIME, SBI_EXT_TIME_SET_TIMER, stime_value, 0,
+		  0, 0, 0, 0);
 }
