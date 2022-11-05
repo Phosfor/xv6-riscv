@@ -16,9 +16,14 @@ _entry:
         # mul a0, a0, a1
         # add sp, sp, a0
 
-        # tp contains the hartid. We only upport a single hart for now.
-        li tp, 0
+        # tp should contain the hartid.
+        # While we only support a single hart for now
+        # we can already write it from a0
+        # where OpenSBI passes it to us 
+        mv tp, a0
+        # li tp, 0
         # jump to start() in start.c
-        call main
+        # call main
+        call start
 spin:
         j spin

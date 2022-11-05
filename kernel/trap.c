@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "sbi.h"
 
 struct spinlock tickslock;
 uint ticks;
@@ -20,6 +21,7 @@ void
 trapinit(void)
 {
   initlock(&tickslock, "time");
+  ticks = 0;
 }
 
 // set up to take exceptions and traps while in the kernel.
@@ -166,6 +168,12 @@ clockintr()
   acquire(&tickslock);
   ticks++;
   wakeup(&ticks);
+
+  // Rescedule timer. This also clears the timer interrupt.
+  uint64_t next = r_time();
+  // printf("next timer: %p\n", next);
+  sbi_set_timer(next + 1000000);
+
   release(&tickslock);
 }
 
@@ -201,17 +209,16 @@ devintr()
       plic_complete(irq);
 
     return 1;
-  } else if(scause == 0x8000000000000001L){
+  } else if(scause == 0x8000000000000005L){
     // software interrupt from a machine-mode timer interrupt,
     // forwarded by timervec in kernelvec.S.
 
     if(cpuid() == 0){
       clockintr();
     }
-    
-    // acknowledge the software interrupt by clearing
-    // the SSIP bit in sip.
-    w_sip(r_sip() & ~2);
+
+    // Poll console input
+    consolepoll();
 
     return 2;
   } else {
